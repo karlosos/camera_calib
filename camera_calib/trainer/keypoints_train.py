@@ -12,7 +12,7 @@ from camera_calib.models.keras_models import KeypointDetectorModel
 from camera_calib.datasets.keypoints_dataset import KeyPointDatasetBuilder
 
 parser = argparse.ArgumentParser(description="Training")
-parser.add_argument("--data_dir", default="data_keypoints/", type=str)
+parser.add_argument("--data_dir", default="data/keypoints/", type=str)
 parser.add_argument("--x_train_dir", default="train/JPEGImages", type=str)
 parser.add_argument("--y_train_dir", default="train/Annotations", type=str)
 parser.add_argument("--x_test_dir", default="test/JPEGImages", type=str)

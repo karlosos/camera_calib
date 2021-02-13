@@ -6,6 +6,8 @@ import mxnet as mx
 
 import numpy as np
 import tensorflow as tf
+# import keras
+# from keras.utils import generic_utils
 import segmentation_models as sm
 from .keras_layers import pyramid_layer
 from ..preprocessing.image import _build_homo_preprocessing
@@ -32,7 +34,7 @@ def _build_resnet18():
     #     RESNET_ARCHI_TF_KERAS_PATH,
     #     RESNET_ARCHI_TF_KERAS_TOTAR,
     # )
-    resnet18_path_to_file = "deep_homo_model_1.h5"
+    resnet18_path_to_file = "models/deep_homo_model_1.h5"
 
     resnet18 = tf.keras.models.load_model(resnet18_path_to_file)
     resnet18.compile()

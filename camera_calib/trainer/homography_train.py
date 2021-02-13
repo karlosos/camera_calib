@@ -27,7 +27,7 @@ opt = parser.parse_args()
 """
 Launching with:
 ```
-python3 camera_calib/trainer/homography_train.py --data_dir 'dataset/ \
+python3 camera_calib/trainer/homography_train.py --data_dir 'data/homography/ \
                                         --x_train_dir 'train_img' \
                                         --y_train_dir 'train_homo' \
                                         --x_test_dir 'test_img' \
