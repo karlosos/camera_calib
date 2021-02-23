@@ -29,12 +29,12 @@ def _build_resnet18():
         a tf.keras.models.Model
     Raises:
     """
-    # resnet18_path_to_file = tf.keras.utils.get_file(
-    #     RESNET_ARCHI_TF_KERAS_NAME,
-    #     RESNET_ARCHI_TF_KERAS_PATH,
-    #     RESNET_ARCHI_TF_KERAS_TOTAR,
-    # )
-    resnet18_path_to_file = "models/deep_homo_model_1.h5"
+    resnet18_path_to_file = tf.keras.utils.get_file(
+        RESNET_ARCHI_TF_KERAS_NAME,
+        RESNET_ARCHI_TF_KERAS_PATH,
+        RESNET_ARCHI_TF_KERAS_TOTAR,
+    )
+    #resnet18_path_to_file = "models/deep_homo_model_1"
 
     resnet18 = tf.keras.models.load_model(resnet18_path_to_file)
     resnet18.compile()
