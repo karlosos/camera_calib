@@ -53,7 +53,7 @@ def main():
         input_shape=(320, 320),
     )
 
-    WEIGHTS_NAME = "../models/FPN_efficientnetb3_0.0001_8.h5"
+    WEIGHTS_NAME = "../models/FPN_efficientnetb3_0.0001_8_427.h5"
     kp_model.load_weights(WEIGHTS_NAME)
 
     # Load template image
