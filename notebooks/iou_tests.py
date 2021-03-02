@@ -1,3 +1,8 @@
+"""
+Launch from notebooks/ directory
+"""
+
+
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
@@ -56,18 +61,43 @@ def main():
     WEIGHTS_NAME = "../models/FPN_efficientnetb3_0.0001_8_427.h5"
     kp_model.load_weights(WEIGHTS_NAME)
 
-    # Load template image
+    # Load image
+    file_name = "0"
+    image = load_image(f"../data/homography/test_img/{file_name}.jpg")
+
+    # Load homography for image
+    homo = np.load(f"../data/homography/test_homo/{file_name}_homo.npy")
+
+    # Load template
     template = cv2.imread("../resources/world_cup_template.png")
     template = cv2.cvtColor(template, cv2.COLOR_BGR2RGB)
     template = cv2.resize(template, (1280, 720)) / 255.0
 
-    template = rgb_template_to_coord_conv_template(template)
+    # template = rgb_template_to_coord_conv_template(template)
 
-    # Load image
-    image = load_image("../data/images/BaltykSwit (2).jpg")
+    # Transform template on image
+    # TODO: warp with real homo
+    # warp = warp_image(image, homo)
+    img = image
+    H = homo
+    out_shape = img.shape[-3:-1] if len(img.shape) == 4 else img.shape[:-1]
+    warp = cv2.warpPerspective(img, H, dsize=out_shape, flags=cv2.WARP_INVERSE_MAP)
+    # warp = cv2.warpPerspective(image, homo, dsize=image.shape)
+    visualize(
+        warp=warp,
+        template=template,
+        image=image,
+    )
+
+    # Find keypoints and homography
     pr_mask = kp_model(image)
-    breakpoint()
+    src, dst = _points_from_mask(pr_mask[0])
+    pred_homo = get_perspective_transform(dst, src)
+    print("pred_homo", pred_homo)
+
     homography_viz(image, pr_mask, template)
+
+    # Transform back transformed template
 
 
 if __name__ == "__main__":
