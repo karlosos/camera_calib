@@ -12,6 +12,10 @@ from camera_calib.utils.image import denormalize
 from camera_calib.utils.masks import _points_from_mask
 from camera_calib.utils.homography import get_perspective_transform
 from camera_calib.utils.homography import warp_image
+from camera_calib.utils.homography import get_four_corners 
+from camera_calib.utils.homography import compute_homography
+from camera_calib.utils.image import torch_img_to_np_img, np_img_to_torch_img, denormalize
+from camera_calib.utils.utils import to_torch
 from camera_calib.utils.vizualization import merge_template
 from camera_calib.models.keras_models import KeypointDetectorModel
 from camera_calib.utils.vizualization import rgb_template_to_coord_conv_template
@@ -72,17 +76,13 @@ def main():
     template = cv2.imread("../resources/world_cup_template.png")
     template = cv2.cvtColor(template, cv2.COLOR_BGR2RGB)
     template = cv2.resize(template, (1280, 720)) / 255.0
+    template = rgb_template_to_coord_conv_template(template)
 
-    # template = rgb_template_to_coord_conv_template(template)
+    # Warp template image
+    warp = warp_image(np_img_to_torch_img(template), to_torch(homo), method='torch')
+    warp = torch_img_to_np_img(warp[0])
 
     # Transform template on image
-    # TODO: warp with real homo
-    # warp = warp_image(image, homo)
-    img = image
-    H = homo
-    out_shape = img.shape[-3:-1] if len(img.shape) == 4 else img.shape[:-1]
-    warp = cv2.warpPerspective(img, H, dsize=out_shape, flags=cv2.WARP_INVERSE_MAP)
-    # warp = cv2.warpPerspective(image, homo, dsize=image.shape)
     visualize(
         warp=warp,
         template=template,
