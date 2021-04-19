@@ -49,15 +49,27 @@ def homography_viz(image, pr_mask, template):
     pred_warp = warp_image(
         cv2.resize(template, (320, 320)), pred_homo, out_shape=(320, 320)
     )
-    visualize(
-        image=denormalize(image.squeeze()),
-        warped_homography=pred_warp,
-    )
+    #visualize(
+    #    image=denormalize(image.squeeze()),
+    #    warped_homography=pred_warp,
+    #)
 
     test = merge_template(
         image / 255.0, cv2.resize(pred_warp, (image.shape[1], image.shape[0]))
     )
     visualize(image=test)
+    return pred_homo
+    
+def homography_viz_save(image, pr_mask, template, filename):
+    src, dst = _points_from_mask(pr_mask[0])
+    pred_homo = get_perspective_transform(dst, src)
+    pred_warp = warp_image(
+        cv2.resize(template, (320, 320)), pred_homo, out_shape=(320, 320)
+    )
+    test = merge_template(
+        image / 255.0, cv2.resize(pred_warp, (image.shape[1], image.shape[0]))
+    )
+    plt.imsave(f"../data/output/iou_images/{filename}.png", test)
     return pred_homo
 
 
@@ -87,6 +99,7 @@ def main():
 
         # Load template
         template = cv2.imread("../resources/world_cup_template.png")
+        #template = cv2.imread("../resources/pitch_model.png")
         template = cv2.cvtColor(template, cv2.COLOR_BGR2RGB)
         template = cv2.resize(template, (1280, 720)) / 255.0
         template = rgb_template_to_coord_conv_template(template)
@@ -109,7 +122,7 @@ def main():
             pred_homo = get_perspective_transform(dst, src)
             print("pred_homo", pred_homo)
 
-            # homography_viz(image, pr_mask, template)
+            homography_viz_save(image, pr_mask, template, file_name)
 
             # Transform back transformed template
             pred_warp = warp_image(
@@ -120,7 +133,7 @@ def main():
                 pred_warp, np.linalg.inv(pred_homo), out_shape=(320, 320)
             )
             # Visualize two warped templates
-            # visualize(ground_truth=cv2.resize(warp, (320, 320)), prediction=pred_warp)
+            #visualize(ground_truth=cv2.resize(warp, (320, 320)), prediction=pred_warp)
 
             # Calculating IoU
             warp_resized = cv2.resize(warp, (320, 320))
@@ -130,11 +143,19 @@ def main():
             print("IoU", iou_score)
             iou_scores.append(iou_score)
             print("Mean IoU", np.mean(np.array(iou_scores)))
-        except:
+        except Exception as e:
+            print(e)
             # If there were less than 4 points
             print("IoU", 0)
             iou_scores.append(0)
             print("Mean IoU", np.mean(np.array(iou_scores)))
+            plt.imsave(f"../data/output/iou_images/bad/{file_name}.png", image)
+    
+    for idx, iou in enumerate(iou_scores):
+        print(idx, filenames[idx], ":", iou)
+    print("==============")
+    print("IoU score mean", np.mean(np.array(iou_scores)))
+    print("IoU median", np.median(np.array(iou_scores)))
 
 
 if __name__ == "__main__":
